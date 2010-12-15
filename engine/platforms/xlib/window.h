@@ -3,31 +3,16 @@
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>
+#include <cstdio>
 
 namespace machinist {
 
 class exception {};
 
-template <class EventHandler>
 class XWindow {
-public:
-	void run() {
-		// event loop
-		XEvent xev;
-		while (true) {
-			XNextEvent(display, &xev);
-			
-			switch (xev.type) {
-			case KeyPress: return;
-			}
-			
-			static_cast<EventHandler*>(this)->draw();
-			glXSwapBuffers(display, win);
-		}
-	}
-
 protected:
-	XWindow(::Display *d) : display(d) {
+	XWindow() {
+		display = XOpenDisplay(NULL);
 		Window root = DefaultRootWindow(display);
 		
 		// set up graphics attributes
@@ -45,6 +30,10 @@ protected:
 			display, root, 0, 0, 640, 480, 0, vi->depth, InputOutput, vi->visual,
 			CWColormap | CWEventMask, &swa
 		);
+		
+		wm_delete = XInternAtom(display, "WM_DELETE_WINDOW", False);
+		Atom prots[] = { wm_delete };
+		XSetWMProtocols(display, win, prots, 1);
 		
 		// show the window
 		XMapWindow(display, win);
@@ -67,8 +56,46 @@ protected:
 		XDestroyWindow(display, win);
 		XCloseDisplay(display);
 	}
+	
+	template <class Handler>
+	void handle_message() {
+		Handler& handler = *static_cast<Handler*>(this);
+		
+		XEvent event;
+		XNextEvent(display, &event);
+	
+		KeySym key;
+		switch (event.type) {
+		case ClientMessage:
+			if (event.xclient.data.l[0] == wm_delete)
+				handler.close();
+			break;
+		
+		case KeyPress:
+			key = XLookupKeysym(&event.xkey, 0);
+			handler.key_press(key);
+			break;
+		case KeyRelease:
+			key = XLookupKeysym(&event.xkey, 0);
+			handler.key_release(key);
+			break;
+		
+		/*case ButtonPress:
+			handler.button_press();
+			break;
+		case ButtonRelease:
+			handler.button_release();
+			break;*/
+		}
+	}
+	
+	bool message_pending() { return XPending(display); }
+	
+	void swap_buffers() { glXSwapBuffers(display, win); }
 
 private:
+	Atom wm_delete;
+	
 	Display *display;
 	Window win;
 	GLXContext glc;

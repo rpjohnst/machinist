@@ -13,7 +13,9 @@ env = Environment(
 	LIBS = [ "X11", "GL" ]
 )
 
-if env["build"] == "debug":
+if env["build"] == "release":
+	env.Append(CCFLAGS = " -O3")
+elif env["build"] == "debug":
 	env.Append(CCFLAGS = " -g", CPPDEFINES = [ "DEBUG" ])
 
 Help(var.GenerateHelpText(env))
