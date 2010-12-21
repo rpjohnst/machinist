@@ -1,12 +1,20 @@
-#include "platforms/xlib/window.h"
+/*
+ * we could just do a substitution here, but scons' dependency
+ * tracker gets confused by the macros... should we write our own
+ * or patch scons or something?
+ */
+#if PLATFORM == win32
+#	include <platforms/win32/window.h>
+#elif PLATFORM == xlib
+#	include <platforms/xlib/window.h>
+#endif
 
 namespace machinist {
 
-class Game : public XWindow {
-	friend class XWindow;
-	
+class Game : private Window {
 public:
 	Game() {
+		glViewport(0, 0, 640, 480);
 		glClearColor(1.0, 0.0, 0.0, 1.0);
 		
 		glMatrixMode(GL_PROJECTION);
@@ -20,9 +28,7 @@ public:
 	void run() {
 		running = true;
 		while (running) {
-			while (message_pending())
-				handle_message<Game>();
-			
+			handle_events();
 			draw();
 			swap_buffers();
 		}
@@ -30,11 +36,12 @@ public:
 	
 private:
 	void key_press(int key) {
-		if (key == XK_Escape)
-			close();
+		quit();
 	}
 	
 	void key_release(int) {}
+	
+	void quit() { running = false; }
 	
 	void draw() {
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -49,8 +56,6 @@ private:
 			glVertex3f(0, 10, 0);
 		glEnd();
 	}
-	
-	void close() { running = false; }
 	
 	bool running;
 };

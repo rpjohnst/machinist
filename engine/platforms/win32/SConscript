@@ -1,0 +1,9 @@
+Import([ "env" ])
+
+env.Tool("mingw")
+env.Append(LIBS = [ "OpenGL32", "GDI32" ])
+
+platform = env.Library("platform", Glob("*.cpp"))
+env.Prepend(LIBS = [ platform ])
+
+Return([ "platform" ])

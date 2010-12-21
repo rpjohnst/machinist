@@ -1,0 +1,9 @@
+Import([ "env" ])
+
+env.Tool("mingw")
+env.Append(LIBS = [ "X11", "GL" ])
+
+platform = env.Library("platform", Glob("*.cpp"))
+env.Preppend(LIBS = [ platform ])
+
+Return([ "platform" ])

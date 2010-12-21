@@ -1,0 +1,8 @@
+Import([ "env" ])
+
+platform = env.SConscript(
+	"platforms/$platform/SConscript", duplicate = False,
+	exports = [ "env" ], variant_dir = "platform"
+)
+
+machinist = env.Program("machinist", Glob("*.cpp"))
