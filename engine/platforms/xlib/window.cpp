@@ -41,7 +41,7 @@ Window::~Window() {
 	XCloseDisplay(display);
 }
 
-void Window::handle_messages() {
+void Window::handle_events() {
 	while (XPending(display)) {
 		XEvent event;
 		XNextEvent(display, &event);
@@ -50,7 +50,7 @@ void Window::handle_messages() {
 		switch (event.type) {
 		case ClientMessage:
 			if (event.xclient.data.l[0] == wm_delete)
-				close();
+				quit();
 			break;
 		
 		case KeyPress:

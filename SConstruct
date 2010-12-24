@@ -6,12 +6,18 @@ var.AddVariables(
 		"build", "set to debug for syms.", "debug",
 		allowed_values = [ "debug", "release" ]
 	),
-	("platform", "target api.", env["PLATFORM"])
+	EnumVariable(
+		"platform", "target api.", {
+			"win32": "win32",
+			"posix": "xlib"
+		}[env["PLATFORM"]],
+		allowed_values = [ "win32", "xlib" ]
+	)
 )
 
-env = Environment(
-	variables = var, tools = [],
-	CPPDEFINES = { "PLATFORM": "$platform" },
+env = Environment(variables = var, tools = [])
+env.Append(
+	CPPDEFINES = [ "PLATFORM_" + env["platform"].upper() ],
 	CPPPATH = [ "#engine" ]
 )
 

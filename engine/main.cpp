@@ -3,9 +3,9 @@
  * tracker gets confused by the macros... should we write our own
  * or patch scons or something?
  */
-#if PLATFORM == win32
+#if PLATFORM_WIN32
 #	include <platforms/win32/window.h>
-#elif PLATFORM == xlib
+#elif PLATFORM_XLIB
 #	include <platforms/xlib/window.h>
 #endif
 
