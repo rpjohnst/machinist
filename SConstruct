@@ -1,6 +1,6 @@
 env = DefaultEnvironment()
 
-var = Variables(".variables")
+var = Variables([ ".variables" ])
 var.AddVariables(
 	EnumVariable(
 		"build", "set to debug for syms.", "debug",
@@ -15,7 +15,7 @@ var.AddVariables(
 	)
 )
 
-env = Environment(variables = var, tools = [])
+env = Environment(variables = var, tools = [ "clang" ])
 env.Append(
 	CPPDEFINES = [ "PLATFORM_" + env["platform"].upper() ],
 	CPPPATH = [ "#engine" ]
