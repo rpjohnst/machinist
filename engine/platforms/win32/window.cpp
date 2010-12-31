@@ -41,14 +41,14 @@ Window::Window() {
 		32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		16, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
 	};
-	hDC = GetDC(hWnd);
-	GLuint pf;
-	pf = ChoosePixelFormat(hDC, &pfd);
+	HDC hDC = GetDC(hWnd);
+	GLuint pf = ChoosePixelFormat(hDC, &pfd);
 	SetPixelFormat(hDC, pf, &pfd);
 	
 	// rendering context
 	hRC = wglCreateContext(hDC);
 	wglMakeCurrent(hDC, hRC);
+	ReleaseDC(hWnd, hDC);
 	
 	// show
 	ShowWindow(hWnd, SW_SHOW);
@@ -57,7 +57,7 @@ Window::Window() {
 Window::~Window() {
 	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(hRC);
-	ReleaseDC(hWnd, hDC);
+	
 	DestroyWindow(hWnd);
 	UnregisterClass("Machinist", GetModuleHandle(NULL));
 }
@@ -69,7 +69,10 @@ bool Window::handle_events() {
 		DispatchMessage(&msg);
 	}
 	
-	return true;
+	if (msg.message == WM_QUIT)
+		return false;
+	else
+		return true;
 }
 
 LRESULT CALLBACK Window::WndProc(
@@ -79,8 +82,8 @@ LRESULT CALLBACK Window::WndProc(
 	Window *handler = reinterpret_cast<Window*>(udata);
 	
 	switch (uMsg) {
-	case WM_CLOSE:
-		handler->quit();
+	case WM_DESTROY:
+		PostQuitMessage(0);
 		break;
 	
 	case WM_KEYDOWN:

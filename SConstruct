@@ -1,6 +1,6 @@
 env = DefaultEnvironment()
 
-var = Variables([ ".variables" ])
+var = Variables()
 var.AddVariables(
 	EnumVariable(
 		"build", "set to debug for syms.", "debug",
@@ -12,26 +12,33 @@ var.AddVariables(
 			"posix": "xlib"
 		}[env["PLATFORM"]],
 		allowed_values = [ "win32", "xlib" ]
+	),
+	EnumVariable(
+		"graphics", "target graphics engine.", "opengl",
+		allowed_values = [ "opengl", "directx" ]
 	)
 )
 
 env = Environment(variables = var, tools = [ "clang" ])
 env.Append(
-	CPPDEFINES = [ "PLATFORM_" + env["platform"].upper() ],
+	CPPDEFINES = [
+		"PLATFORM_" + env["platform"].upper(),
+		"GRAPHICS_" + env["graphics"].upper()
+	],
 	CPPPATH = [ "#engine" ]
 )
 
 # profile
 if env["build"] == "release":
-	env.Append(CCFLAGS = " -O3")
+	env.Append(CCFLAGS = "-O3")
 elif env["build"] == "debug":
-	env.Append(CCFLAGS = " -g", CPPDEFINES = [ "DEBUG" ])
+	env.Append(CCFLAGS = "-g", CPPDEFINES = [ "DEBUG" ])
 
-Help(var.GenerateHelpText(env))
-var.Save(".variables", env)
+if GetOption("help"):
+	Help(var.GenerateHelpText(env))
+	Exit()
 
-if not GetOption("help"):
-	env.SConscript(
-		"engine/SConscript", duplicate = False,
-		exports = [ "env" ], variant_dir = "$build/engine",
-	)
+env.SConscript(
+	"engine/SConscript", exports = [ "env" ],
+	variant_dir = "$build/engine", duplicate = False,
+)

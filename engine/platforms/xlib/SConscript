@@ -1,8 +1,6 @@
 Import([ "env" ])
 
-env.Append(LIBS = [ "X11", "GL" ])
-
 platform = env.Library("platform", Glob("*.cpp"))
-env.Prepend(LIBS = [ platform ])
+env.Append(LIBS = [ platform, "X11", "GL" ])
 
 Return([ "platform" ])

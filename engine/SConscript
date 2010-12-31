@@ -1,8 +1,18 @@
 Import([ "env" ])
 
+# platform is responsible for linking graphics libraries, rather than graphics
+# graphics libraries differ by platform, e.g. GL vs. OpenGL32
+
 platform = env.SConscript(
-	"platforms/$platform/SConscript", duplicate = False,
-	exports = [ "env" ], variant_dir = "platform"
+	"platforms/$platform/SConscript", exports = [ "env" ],
+	variant_dir = "platform", duplicate = False,
+)
+
+graphics = env.SConscript(
+	"graphics/SConscript", exports = [ "env" ],
+	duplicate = False
 )
 
 machinist = env.Program("machinist", Glob("*.cpp"))
+
+Return([ "machinist" ])

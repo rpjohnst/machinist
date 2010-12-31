@@ -1,0 +1,11 @@
+Import([ "env" ])
+
+api = env.SConscript(
+	"$graphics/SConscript", exports = [ "env" ],
+	variant_dir = "api", duplicate = False
+)
+
+graphics = env.Library("graphics", Glob("*.cpp") + api)
+env.Append(LIBS = [ graphics, "IL" ])
+
+Return([ "graphics" ])

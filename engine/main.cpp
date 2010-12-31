@@ -3,11 +3,23 @@
  * tracker gets confused by the macros... should we write our own
  * or patch scons or something?
  */
+
 #if PLATFORM_WIN32
 #	include <platforms/win32/window.h>
 #elif PLATFORM_XLIB
 #	include <platforms/xlib/window.h>
 #endif
+
+#if GRAPHICS_OPENGL
+#	include <graphics/opengl/texture.h>
+#elif GRAPHICS_DIRECTX
+#	include <graphics/directx/texture.h>
+#endif
+
+#include <graphics/sprite.h>
+
+#include <IL/il.h>
+#include <iostream>
 
 namespace machinist {
 
@@ -23,12 +35,34 @@ public:
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		
+		glEnable(GL_TEXTURE_2D);
+		
+		ilInit();
+		ILuint image;
+		ilGenImages(1, &image);
+		ilBindImage(image);
+		ilLoadImage("test.bmp");
+		
+		texture = new Texture(
+			ilGetInteger(IL_IMAGE_WIDTH),
+			ilGetInteger(IL_IMAGE_WIDTH),
+			ilGetData()
+		);
+		sprite = new Sprite(*texture);
+	}
+	
+	~Game() {
+		delete sprite;
+		delete texture;
 	}
 	
 	void run() {
 		running = true;
 		while (running) {
-			handle_events();
+			if (!handle_events())
+				running = false;
+			
 			draw();
 			swap_buffers();
 		}
@@ -48,16 +82,12 @@ private:
 		
 		glLoadIdentity();
 		
-		glColor3f(0.0, 1.0, 0.0);
-		glBegin(GL_QUADS);
-			glVertex3f(0, 0, 0);
-			glVertex3f(10, 0, 0);
-			glVertex3f(10, 10, 0);
-			glVertex3f(0, 10, 0);
-		glEnd();
+		sprite->draw();
 	}
 	
 	bool running;
+	Texture *texture;
+	Sprite *sprite;
 };
 
 }

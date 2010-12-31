@@ -14,7 +14,7 @@ protected:
 	Window();
 	~Window();
 	
-	void handle_events();
+	bool handle_events();
 	
 	void swap_buffers() { glXSwapBuffers(display, win); }
 

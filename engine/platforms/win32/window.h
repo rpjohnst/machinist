@@ -22,7 +22,6 @@ private:
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 	
 	HWND hWnd;
-	HDC hDC;
 	HGLRC hRC;
 };
 
