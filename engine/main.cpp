@@ -11,9 +11,9 @@
 #endif
 
 #if GRAPHICS_OPENGL
-#	include <graphics/opengl/texture.h>
+#	include <graphics/opengl/image.h>
 #elif GRAPHICS_DIRECTX
-#	include <graphics/directx/texture.h>
+#	include <graphics/directx/image.h>
 #endif
 
 #include <graphics/sprite.h>
@@ -39,22 +39,23 @@ public:
 		glEnable(GL_TEXTURE_2D);
 		
 		ilInit();
-		ILuint image;
-		ilGenImages(1, &image);
-		ilBindImage(image);
+		ILuint i;
+		ilGenImages(1, &i);
+		ilBindImage(i);
 		ilLoadImage("test.bmp");
-		
-		texture = new Texture(
+		image = new Image(
 			ilGetInteger(IL_IMAGE_WIDTH),
 			ilGetInteger(IL_IMAGE_WIDTH),
 			ilGetData()
 		);
-		sprite = new Sprite(*texture);
+		ilDeleteImages(1, &i);
+		
+		sprite = new Sprite(*image);
 	}
 	
 	~Game() {
 		delete sprite;
-		delete texture;
+		delete image;
 	}
 	
 	void run() {
@@ -86,7 +87,7 @@ private:
 	}
 	
 	bool running;
-	Texture *texture;
+	Image *image;
 	Sprite *sprite;
 };
 

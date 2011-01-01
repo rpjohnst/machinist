@@ -1,6 +1,7 @@
 Import([ "env" ])
 
-platform = env.Library("platform", Glob("*.cpp"), LIBS = [ "OpenGL32", "GDI32" ])
-env.Append(LIBS = [ platform, "OpenGL32", "GDI32" ])
+objects = [ env.Object(source) for source in Glob("*.cpp") ]
 
-Return([ "platform" ])
+env.Append(LIBS = [ "OpenGL32", "GDI32" ])
+
+Return([ "objects" ])

@@ -1,6 +1,7 @@
 Import([ "env" ])
 
-platform = env.Library("platform", Glob("*.cpp"))
-env.Append(LIBS = [ platform, "X11", "GL" ])
+objects = [ env.Object(source) for source in Glob("*.cpp") ]
 
-Return([ "platform" ])
+env.Append(LIBS = [ "X11", "GL" ])
+
+Return([ "objects" ])

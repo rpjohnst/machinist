@@ -13,6 +13,6 @@ graphics = env.SConscript(
 	duplicate = False
 )
 
-machinist = env.Program("machinist", Glob("*.cpp"))
+machinist = env.Program("machinist", Glob("*.cpp") + platform + graphics)
 
 Return([ "machinist" ])

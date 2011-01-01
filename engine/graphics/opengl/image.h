@@ -5,10 +5,10 @@
 
 namespace machinist {
 
-class Texture {
+class Image {
 public:
-	Texture(int width, int height, void* data);
-	void bind() { glBindTexture(GL_TEXTURE_2D, texture); }
+	Image(int width, int height, void* data);
+	void draw(GLfloat *vertices, GLfloat *texcoords);
 
 private:
 	GLuint texture;

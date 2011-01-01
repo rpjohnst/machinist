@@ -1,11 +1,10 @@
 Import([ "env" ])
 
-api = env.SConscript(
+objects = env.SConscript(
 	"$graphics/SConscript", exports = [ "env" ],
 	variant_dir = "api", duplicate = False
-)
+) + [ env.Object(source) for source in Glob("*.cpp") ]
 
-graphics = env.Library("graphics", Glob("*.cpp") + api)
-env.Append(LIBS = [ graphics, "IL" ])
+env.Append(LIBS = [ "IL" ])
 
-Return([ "graphics" ])
+Return([ "objects" ])

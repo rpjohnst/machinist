@@ -25,7 +25,8 @@ env.Append(
 		"PLATFORM_" + env["platform"].upper(),
 		"GRAPHICS_" + env["graphics"].upper()
 	],
-	CPPPATH = [ "#engine" ]
+	CPPPATH = [ "#engine" ],
+	CXXFLAGS = "-fcolor-diagnostics"
 )
 
 # profile

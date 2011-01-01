@@ -10,4 +10,6 @@ def generate(env):
 	env["LIBSUFFIX"] = ".a"
 
 def exists(env):
-	return env.Detect(compilers)
+	for compiler in [ "clang", "clang++" ]:
+		if not env.Detect(compiler): return False
+	return True

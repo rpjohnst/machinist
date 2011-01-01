@@ -1,7 +1,5 @@
 Import([ "env" ])
 
-api = []
-for source in Glob("*.cpp"):
-	api.append(env.Object(source))
+api = [ env.Object(source) for source in Glob("*.cpp") ]
 
 Return([ "api" ])

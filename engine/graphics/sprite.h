@@ -2,18 +2,18 @@
 #define GRAPHICS_SPRITE_H
 
 #if GRAPHICS_OPENGL
-#	include <graphics/opengl/texture.h>
+#	include <graphics/opengl/image.h>
 #endif
 
 namespace machinist {
 
 class Sprite {
 public:
-	Sprite(Texture& t) : texture(t) {}
+	Sprite(Image& i) : image(i) {}
 	void draw();
 
 private:
-	Texture& texture;
+	Image& image;
 };
 
 }
