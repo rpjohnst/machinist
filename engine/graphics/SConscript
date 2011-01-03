@@ -1,9 +1,8 @@
 Import([ "env" ])
 
-objects = env.SConscript(
-	"$graphics/SConscript", exports = [ "env" ],
-	variant_dir = "api", duplicate = False
-) + [ env.Object(source) for source in Glob("*.cpp") ]
+objects = [
+	env.Object(source) for source in env.Glob("*.cpp") + env.Glob("$graphics/*.cpp")
+]
 
 env.Append(LIBS = [ "IL" ])
 

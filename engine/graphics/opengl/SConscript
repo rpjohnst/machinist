@@ -1,5 +1,0 @@
-Import([ "env" ])
-
-api = [ env.Object(source) for source in Glob("*.cpp") ]
-
-Return([ "api" ])

@@ -48,7 +48,8 @@ public:
 			ilGetInteger(IL_IMAGE_WIDTH),
 			ilGetData()
 		);
-		ilDeleteImages(1, &i);
+		ilDeleteImage(i);
+		ilShutDown();
 		
 		sprite = new Sprite(*image);
 	}
