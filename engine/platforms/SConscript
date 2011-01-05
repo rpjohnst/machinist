@@ -1,0 +1,9 @@
+import machinist
+Import([ "env" ])
+
+objects = env.SConscript(
+	"$platform/SConscript",
+	exports = [ "env" ], duplicate = False
+) + machinist.Objects(env, Glob("*.cpp"))
+
+Return([ "objects" ])

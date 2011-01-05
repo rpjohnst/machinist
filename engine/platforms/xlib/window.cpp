@@ -1,8 +1,9 @@
 #include "window.h"
+#include <cstring>
 
 namespace machinist {
 
-Window::Window() {
+Window::Window(int w, int h) : width(w), height(h) {
 	display = XOpenDisplay(NULL);
 	::Window root = DefaultRootWindow(display);
 	
@@ -16,28 +17,30 @@ Window::Window() {
 	swa.event_mask = ExposureMask |
 		KeyPressMask | KeyReleaseMask |
 		ButtonPressMask | ButtonReleaseMask;
-	win = XCreateWindow(
-		display, root, 0, 0, 640, 480, 0, vi->depth, InputOutput, vi->visual,
+	window = XCreateWindow(
+		display, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
 		CWColormap | CWEventMask, &swa
 	);
 	
-	wm_delete = XInternAtom(display, "WM_DELETE_WINDOW", False);
-	Atom prots[] = { wm_delete };
-	XSetWMProtocols(display, win, prots, 1);
+	// receive close event which is off by default for some reason
+	Atom wm_protocols[] = { XInternAtom(display, "WM_DELETE_WINDOW", False) };
+	XSetWMProtocols(display, window, wm_protocols, 1);
 	
 	// rendering context
 	glc = glXCreateContext(display, vi, NULL, GL_TRUE);
-	glXMakeCurrent(display, win, glc);
+	glXMakeCurrent(display, window, glc);
 	
 	// show the window
-	XMapWindow(display, win);
-	glViewport(0, 0, 640, 480);
+	XMapWindow(display, window);
+	XWindowAttributes xwa;
+	XGetWindowAttributes(display, window, &xwa);
+	glViewport(0, 0, xwa.width, xwa.height);
 }
 
 Window::~Window() {
 	glXMakeCurrent(display, None, NULL);
 	glXDestroyContext(display, glc);
-	XDestroyWindow(display, win);
+	XDestroyWindow(display, window);
 	XCloseDisplay(display);
 }
 
@@ -48,10 +51,12 @@ bool Window::handle_events() {
 	
 		KeySym key;
 		switch (event.type) {
-		case ClientMessage:
-			if (event.xclient.data.l[0] == wm_delete)
+		case ClientMessage: {
+			Atom wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", True);
+			if (event.xclient.data.l[0] == wm_delete_window)
 				return false;
 			break;
+		}
 		
 		case KeyPress:
 			key = XLookupKeysym(&event.xkey, 0);

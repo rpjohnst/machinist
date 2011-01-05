@@ -1,7 +1,7 @@
+import machinist
 Import([ "env" ])
 
-objects = [ env.Object(source) for source in Glob("*.cpp") ]
-
+objects = machinist.Objects(env, Glob("*.cpp"))
 env.Append(LIBS = [ "OpenGL32", "GDI32" ])
 
 Return([ "objects" ])

@@ -4,11 +4,7 @@
  * or patch scons or something?
  */
 
-#if PLATFORM_WIN32
-#	include <platforms/win32/window.h>
-#elif PLATFORM_XLIB
-#	include <platforms/xlib/window.h>
-#endif
+#include <platform/window.h>
 
 #if GRAPHICS_OPENGL
 #	include <graphics/opengl/image.h>
@@ -25,8 +21,7 @@ namespace machinist {
 
 class Game : private Window {
 public:
-	Game() {
-		glViewport(0, 0, 640, 480);
+	Game() : Window(640, 480), x(0), y(0) {
 		glClearColor(1.0, 0.0, 0.0, 1.0);
 		
 		glMatrixMode(GL_PROJECTION);
@@ -72,7 +67,10 @@ public:
 	
 private:
 	void key_press(int key) {
-		quit();
+		switch (key) {
+			case 'd': x += 6; break;
+			case 'a': x -= 6; break;
+		}
 	}
 	
 	void key_release(int) {}
@@ -83,6 +81,7 @@ private:
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		glLoadIdentity();
+		glTranslatef(x, y, 0);
 		
 		sprite->draw();
 	}
@@ -90,6 +89,7 @@ private:
 	bool running;
 	Image *image;
 	Sprite *sprite;
+	int x, y;
 };
 
 }

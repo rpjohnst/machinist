@@ -11,18 +11,18 @@ class exception {};
 
 class Window : virtual public EventHandler {
 protected:
-	Window();
+	Window(int width, int height);
 	~Window();
 	
 	bool handle_events();
 	
-	void swap_buffers() { glXSwapBuffers(display, win); }
+	void swap_buffers() { glXSwapBuffers(display, window); }
 
 private:
-	Atom wm_delete;
+	int width, height;
 	
 	Display *display;
-	::Window win;
+	::Window window;
 	GLXContext glc;
 };
 

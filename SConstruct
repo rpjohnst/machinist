@@ -1,4 +1,4 @@
-env = DefaultEnvironment()
+env = Environment()
 
 var = Variables()
 var.AddVariables(
