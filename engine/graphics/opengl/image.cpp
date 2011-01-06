@@ -4,7 +4,7 @@ namespace machinist {
 
 // TODO: adjust image data format for final usage
 
-Image::Image(int width, int height, void* data) {
+Image::Image(int w, int h, void* data) : width(w), height(h) {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	

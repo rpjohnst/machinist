@@ -13,8 +13,12 @@ public:
 		const Rect<int>& pos,
 		const Rect<float>& sub = Rect<float>(0, 0, 1, 1)
 	);
+	
+	int get_width() { return width; }
+	int get_height() { return height; }
 
 private:
+	int width, height;
 	GLuint texture;
 };
 

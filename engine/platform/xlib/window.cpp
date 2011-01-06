@@ -3,7 +3,7 @@
 
 namespace machinist {
 
-Window::Window(int w, int h) : width(w), height(h) {
+Window::Window(int width, int height) : WindowBase(width, height) {
 	display = XOpenDisplay(NULL);
 	::Window root = DefaultRootWindow(display);
 	
@@ -67,12 +67,20 @@ bool Window::handle_events() {
 			key_release(key);
 			break;
 		
-		/*case ButtonPress:
-			button_press();
+		case ButtonPress:
+			button_press(
+				event.xbutton.button,
+				event.xbutton.x,
+				event.xbutton.y
+			);
 			break;
 		case ButtonRelease:
-			button_release();
-			break;*/
+			button_release(
+				event.xbutton.button, 
+				event.xbutton.x,
+				event.xbutton.y
+			);
+			break;
 		}
 	}
 	
