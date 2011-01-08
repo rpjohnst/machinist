@@ -8,7 +8,7 @@ var.AddVariables(
 	),
 	EnumVariable(
 		"compiler", "toolchain to use.", "clang",
-		allowed_values = [ "clang", "llvm", "posix" ]
+		allowed_values = [ "clang", "llvm", "g++" ]
 	),
 	EnumVariable(
 		"platform", "target api.", {
