@@ -15,8 +15,8 @@ Image::Image(int w, int h, void* data) : width(w), height(h) {
 		data
 	);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 }
@@ -27,7 +27,11 @@ void Image::draw(const Rect<int>& pos, const Rect<float>& sub) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
-	GLuint vertices[] = {
+	/*
+	 * these arrays need to be the same type or we confuse OpenGL into making
+	 * strange white triangles and blank screens
+	 */
+	GLfloat vertices[] = {
 		pos.left, pos.top,
 		pos.left + pos.width, pos.top,
 		pos.left + pos.width, pos.top + pos.height,
@@ -41,7 +45,7 @@ void Image::draw(const Rect<int>& pos, const Rect<float>& sub) {
 		sub.left, sub.top
 	};
 	
-	glVertexPointer(2, GL_INT, 0, vertices);
+	glVertexPointer(2, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 	glDrawArrays(GL_QUADS, 0, 8);
 	
