@@ -9,7 +9,8 @@ Sprite::Sprite(Image& image) :
 }
 
 void Sprite::draw() {
-	glPushMatrix();
+	glPushMatrix();	
+	
 	glTranslatef(x, y, 0);
 	glRotatef(angle, 0, 0, -1);
 	

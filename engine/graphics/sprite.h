@@ -11,7 +11,7 @@ namespace machinist {
 
 class Sprite {
 public:
-	Sprite(Image& i);
+	Sprite(Image& i/*, Rect<int>& sub, int frames*/);
 	void draw();
 
 private:

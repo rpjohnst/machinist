@@ -4,7 +4,11 @@ var = Variables()
 var.AddVariables(
 	EnumVariable(
 		"build", "set to debug for syms.", "debug",
-		allowed_values = [ "debug", "release" ]
+		allowed_values = [ "debug", "profile", "release" ]
+	),
+	EnumVariable(
+		"compiler", "toolchain to use.", "clang",
+		allowed_values = [ "clang", "llvm", "posix" ]
 	),
 	EnumVariable(
 		"platform", "target api.", {
@@ -19,27 +23,26 @@ var.AddVariables(
 	)
 )
 
-env = Environment(variables = var, tools = [ "clang" ])
+env = Environment(variables = var)
+env.Tool("$compiler")
 env.Append(
 	CPPDEFINES = [
 		"PLATFORM_" + env["platform"].upper(),
 		"GRAPHICS_" + env["graphics"].upper()
 	],
-	CPPPATH = [ "#engine" ],
-	CXXFLAGS = "-fcolor-diagnostics"
+	CPPPATH = [ "#engine" ]
 )
 
-# profile
-if env["build"] == "release":
-	env.Append(CCFLAGS = "-O3")
-elif env["build"] == "debug":
-	env.Append(CCFLAGS = "-g", CPPDEFINES = [ "DEBUG" ])
+env.Append(**{
+	"release": { "CCFLAGS": "-O4", "LINKFLAGS": "-use-gold-plugin" },
+	"debug": { "CCFLAGS": "-g", "CPPDEFINES": [ "DEBUG" ] },
+	"profile": { "CCFLAGS": "-O4 -pg", "LINKFLAGS": "-pg" }
+}[env["build"]])
 
 if GetOption("help"):
 	Help(var.GenerateHelpText(env))
-	Exit()
-
-env.SConscript(
-	"engine/SConscript", exports = [ "env" ],
-	variant_dir = "$build/engine", duplicate = False,
-)
+else:
+	env.SConscript(
+		"engine/SConscript", exports = [ "env" ],
+		variant_dir = "$build/engine", duplicate = False,
+	)
