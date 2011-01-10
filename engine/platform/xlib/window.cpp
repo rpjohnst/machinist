@@ -22,7 +22,7 @@ Window::Window(int width, int height) : WindowBase(width, height) {
 		CWColormap | CWEventMask, &swa
 	);
 	
-	// receive close event which is off by default for some reason
+	// fix the brain-dead default event setup to actually recieve quit events
 	Atom wm_protocols[] = { XInternAtom(display, "WM_DELETE_WINDOW", False) };
 	XSetWMProtocols(display, window, wm_protocols, 1);
 	
@@ -48,8 +48,7 @@ bool Window::handle_events() {
 	while (XPending(display)) {
 		XEvent event;
 		XNextEvent(display, &event);
-	
-		KeySym key;
+		
 		switch (event.type) {
 		case ClientMessage: {
 			Atom wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", True);
@@ -58,14 +57,41 @@ bool Window::handle_events() {
 			break;
 		}
 		
-		case KeyPress:
-			key = XLookupKeysym(&event.xkey, 0);
-			key_press(key);
+		case KeyPress: {
+			KeySym sym = XLookupKeysym(&event.xkey, 0);
+			int key = map_key(sym);
+			
+			if (!keystate[key]) {
+				keystate[key] = true;
+				key_press(key);
+			}
 			break;
-		case KeyRelease:
-			key = XLookupKeysym(&event.xkey, 0);
-			key_release(key);
+		}
+		case KeyRelease: {
+			/*
+			 * X gives us KeyRelease events during auto-repeat, unlike Windows
+			 * which just sends WM_KEYDOWN until the key is *actually* released.
+			 */
+			if (XEventsQueued(display, QueuedAfterReading)) {
+				XEvent next;
+				XPeekEvent(display, &next);
+				if (
+					next.type == KeyPress &&
+					next.xkey.time == event.xkey.time &&
+					next.xkey.keycode == event.xkey.keycode
+				)
+					break;
+			}
+			
+			KeySym sym = XLookupKeysym(&event.xkey, 0);
+			int key = map_key(sym);
+			
+			if (keystate[key]) {
+				keystate[key] = false;
+				key_release(key);
+			}
 			break;
+		}
 		
 		case ButtonPress:
 			button_press(
@@ -85,6 +111,64 @@ bool Window::handle_events() {
 	}
 	
 	return true;
+}
+
+int Window::map_key(KeySym sym) {
+	if (!(sym & 0xFF00)) return sym;
+	
+	switch (sym) {
+		case XK_Left: return Key::Left;
+		case XK_Up: return Key::Up;
+		case XK_Right: return Key::Right;
+		case XK_Down: return Key::Down;
+		
+		case XK_Tab: return Key::Tab;
+		case XK_Return: return Key::Enter;
+		case XK_Shift_L: case XK_Shift_R: return Key::Shift;
+		case XK_Control_L: case XK_Control_R: return Key::Control;
+		case XK_Alt_L: case XK_Alt_R: return Key::Alt;
+		
+		case XK_KP_0: return Key::Num0;
+		case XK_KP_1: return Key::Num1;
+		case XK_KP_2: return Key::Num2;
+		case XK_KP_3: return Key::Num3;
+		case XK_KP_4: return Key::Num4;
+		case XK_KP_5: return Key::Num5;
+		case XK_KP_6: return Key::Num6;
+		case XK_KP_7: return Key::Num7;
+		case XK_KP_8: return Key::Num8;
+		case XK_KP_9: return Key::Num9;
+		
+		case XK_KP_Multiply: return Key::Multiply;
+		case XK_KP_Add: return Key::Add;
+		case XK_KP_Subtract: return Key::Subtract;
+		case XK_KP_Decimal: return Key::Decimal;
+		case XK_KP_Divide: return Key::Divide;
+		
+		case XK_F1: return Key::F1;
+		case XK_F2: return Key::F2;
+		case XK_F3: return Key::F3;
+		case XK_F4: return Key::F4;
+		case XK_F5: return Key::F5;
+		case XK_F6: return Key::F6;
+		case XK_F7: return Key::F7;
+		case XK_F8: return Key::F8;
+		case XK_F9: return Key::F9;
+		case XK_F10: return Key::F10;
+		case XK_F11: return Key::F11;
+		case XK_F12: return Key::F12;
+		
+		case XK_BackSpace: return Key::Backspace;
+		case XK_Escape: return Key::Escape;
+		case XK_Home: return Key::Home;
+		case XK_End: return Key::End;
+		case XK_Page_Up: return Key::PageUp;
+		case XK_Page_Down: return Key::PageDown;
+		case XK_Delete: return Key::Delete;
+		case XK_Insert: return Key::Insert;
+		
+		default: return Key::NoKey;
+	}
 }
 
 }

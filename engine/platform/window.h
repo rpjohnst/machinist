@@ -1,11 +1,13 @@
 #ifndef PLATFORM_WINDOW_H
 #define PLATFORM_WINDOW_H
 
+#include <platform/keyboard.h>
+
 namespace machinist {
 
 class WindowBase {
 protected:
-	WindowBase(int w, int h) : width(w), height(h) {}
+	WindowBase(int width, int height);
 	
 	virtual bool handle_events() = 0;
 	virtual void swap_buffers() = 0;
@@ -16,7 +18,8 @@ protected:
 	virtual void button_release(int button, int x, int y) {};
 	
 	virtual void quit() {};
-
+	
+	bool keystate[Key::Count];
 private:
 	int width, height;
 };
