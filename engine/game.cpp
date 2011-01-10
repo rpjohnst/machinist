@@ -42,10 +42,14 @@ void Game::run() {
 		if (!handle_events())
 			running = false;
 		
-		if (is_key_down(Key::Right)) glTranslatef(1, 0, 0);
-		if (is_key_down(Key::Left)) glTranslatef(-1, 0, 0);
-		if (is_key_down(Key::Down)) glTranslatef(0, 1, 0);
-		if (is_key_down(Key::Up)) glTranslatef(0, -1, 0);
+		if (input().key_down('D')) glTranslatef(1, 0, 0);
+		if (input().key_down('A')) glTranslatef(-1, 0, 0);
+		if (input().key_down('S')) glTranslatef(0, 1, 0);
+		if (input().key_down('W')) glTranslatef(0, -1, 0);
+		if (input().button_released(Mouse::Left)) quit();
+		
+		glLoadIdentity();
+		glTranslatef(input().mouse_x(), input().mouse_y(), 0);
 		
 		draw();
 		swap_buffers();

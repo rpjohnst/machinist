@@ -1,28 +1,33 @@
 #ifndef PLATFORM_WINDOW_H
 #define PLATFORM_WINDOW_H
 
-#include <platform/keyboard.h>
+#include <platform/input.h>
 
 namespace machinist {
 
 class WindowBase {
 protected:
-	WindowBase(int width, int height);
-	
 	virtual bool handle_events() = 0;
 	virtual void swap_buffers() = 0;
 	
-	virtual void key_press(int key) {};
-	virtual void key_release(int key) {};
-	virtual void button_press(int button, int x, int y) {};
-	virtual void button_release(int button, int x, int y) {};
+	virtual void key_press(int key) {}
+	virtual void key_release(int key) {}
+	
+	virtual void button_press(int button, int x, int y) {}
+	virtual void button_release(int button, int x, int y) {}
+	virtual void mouse_move(int x, int y) {}
 	
 	virtual void quit() {};
 	
-	bool keystate[Key::Count];
+	Input& input();
+
 private:
-	int width, height;
+	Input state;
 };
+
+inline Input& WindowBase::input() {
+	return state;
+}
 
 }
 

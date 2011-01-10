@@ -17,20 +17,23 @@ protected:
 	~Window();
 	
 	bool handle_events();
-	
-	void swap_buffers() { glXSwapBuffers(display, window); }
-	bool is_key_down(int key) { return keystate[key]; }
+	void swap_buffers();
 
 private:
+	static Mouse::Button map_button(int);
 	static int map_key(KeySym);
-	
-	int width, height;
 	
 	Display *display;
 	::Window window;
 	GLXContext glc;
-	using WindowBase::keystate;
+	
+	int width, height;
 };
+
+inline void Window::swap_buffers() {
+	input().swap_buffers();
+	glXSwapBuffers(display, window);
+}
 
 }
 

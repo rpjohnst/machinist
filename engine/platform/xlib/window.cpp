@@ -1,9 +1,8 @@
 #include "window.h"
-#include <cstring>
 
 namespace machinist {
 
-Window::Window(int width, int height) : WindowBase(width, height) {
+Window::Window(int w, int h) : width(w), height(h) {
 	display = XOpenDisplay(NULL);
 	::Window root = DefaultRootWindow(display);
 	
@@ -16,7 +15,8 @@ Window::Window(int width, int height) : WindowBase(width, height) {
 	swa.colormap = XCreateColormap(display, root, vi->visual, AllocNone);
 	swa.event_mask = ExposureMask |
 		KeyPressMask | KeyReleaseMask |
-		ButtonPressMask | ButtonReleaseMask;
+		ButtonPressMask | ButtonReleaseMask |
+		PointerMotionMask;
 	window = XCreateWindow(
 		display, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
 		CWColormap | CWEventMask, &swa
@@ -61,8 +61,8 @@ bool Window::handle_events() {
 			KeySym sym = XLookupKeysym(&event.xkey, 0);
 			int key = map_key(sym);
 			
-			if (!keystate[key]) {
-				keystate[key] = true;
+			if (!input().keystate[key]) {
+				input().keystate[key] = true;
 				key_press(key);
 			}
 			break;
@@ -86,26 +86,36 @@ bool Window::handle_events() {
 			KeySym sym = XLookupKeysym(&event.xkey, 0);
 			int key = map_key(sym);
 			
-			if (keystate[key]) {
-				keystate[key] = false;
+			if (input().keystate[key]) {
+				input().keystate[key] = false;
 				key_release(key);
 			}
 			break;
 		}
 		
-		case ButtonPress:
+		case ButtonPress: {
+			Mouse::Button button = map_button(event.xbutton.button);
+			input().mousestate[button] = true;
 			button_press(
-				event.xbutton.button,
+				button,
 				event.xbutton.x,
 				event.xbutton.y
 			);
 			break;
-		case ButtonRelease:
+		}
+		case ButtonRelease: {
+			Mouse::Button button = map_button(event.xbutton.button);
+			input().mousestate[button] = false;
 			button_release(
-				event.xbutton.button, 
+				button, 
 				event.xbutton.x,
 				event.xbutton.y
 			);
+			break;
+		}
+		case MotionNotify:
+			input().mouse = Vector<int>(event.xmotion.x, event.xmotion.y);
+			mouse_move(event.xmotion.x, event.xmotion.y);
 			break;
 		}
 	}
@@ -113,8 +123,21 @@ bool Window::handle_events() {
 	return true;
 }
 
+Mouse::Button Window::map_button(int button) {
+	switch (button) {
+		case Button1: return Mouse::Left;
+		case Button2: return Mouse::Right;
+		case Button3: return Mouse::Middle;
+		default: return Mouse::NoButton;
+	}
+}
+
 int Window::map_key(KeySym sym) {
-	if (!(sym & 0xFF00)) return sym;
+	if (sym < 256) {
+		KeySym lower, key;
+		XConvertCase(sym, &lower, &key);
+		return key;
+	}
 	
 	switch (sym) {
 		case XK_Left: return Key::Left;
