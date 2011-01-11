@@ -28,7 +28,7 @@ Game::Game() : Window(640, 480) {
 	ilDeleteImage(i);
 	ilShutDown();
 	
-	sprite = new Sprite(*image);
+	sprite = new Sprite(*image, Rect<float>(0, 0, 128, 32), 4);
 }
 
 Game::~Game() {

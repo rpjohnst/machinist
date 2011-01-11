@@ -11,13 +11,17 @@ namespace machinist {
 
 class Sprite {
 public:
-	Sprite(Image& i/*, Rect<int>& sub, int frames*/);
+	Sprite(
+		Image& i,
+		const Rect<float>& sub = Rect<float>(0, 0, 1, 1),
+		int frames = 1
+	);
 	void draw();
 
 private:
 	Image& image;
 	Rect<int> pos; // implicitly contains the origin
-	/* frame */
+	Rect<float> frame;
 	
 	int x, y, angle;
 };
