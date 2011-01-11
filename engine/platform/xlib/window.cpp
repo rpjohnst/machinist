@@ -123,6 +123,18 @@ bool Window::handle_events() {
 	return true;
 }
 
+void Window::swap_buffers() {
+	double time = 1. / 30 - clock.get_elapsed();
+	if (time > 0)
+		Clock::sleep(time);
+	
+	// TODO: store frame time, calculate fps
+	clock.reset();
+	
+	input().swap_buffers();
+	glXSwapBuffers(display, window);
+}
+
 Mouse::Button Window::map_button(int button) {
 	switch (button) {
 		case Button1: return Mouse::Left;

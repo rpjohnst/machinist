@@ -4,6 +4,7 @@
 // this file should not be included by the user; use <platform/window.h> instead
 
 #include <platform/window.h>
+#include <platform/clock.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 
@@ -28,12 +29,8 @@ private:
 	GLXContext glc;
 	
 	int width, height;
+	Clock clock;
 };
-
-inline void Window::swap_buffers() {
-	input().swap_buffers();
-	glXSwapBuffers(display, window);
-}
 
 }
 

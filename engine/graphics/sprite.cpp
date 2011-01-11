@@ -24,8 +24,8 @@ void Sprite::draw() {
 	
 	glPopMatrix();
 	
-	frame.left += pos.width;
-	if (frame.left > image.get_width() - pos.width)
+	frame.left += (float)pos.width / image.get_width();
+	if (frame.left > (float)(image.get_width() - pos.width) / image.get_width())
 		frame.left = 0;
 }
 
