@@ -19,6 +19,9 @@ protected:
 	
 	bool handle_events();
 	void swap_buffers();
+	
+	void set_framerate(int);
+	double get_frame_time();
 
 private:
 	static Mouse::Button map_button(int);
@@ -29,8 +32,19 @@ private:
 	GLXContext glc;
 	
 	int width, height;
+	int framerate;
 	Clock clock;
+	
+	double frame;
 };
+
+inline void Window::set_framerate(int fps) {
+	framerate = fps;
+}
+
+inline double Window::get_frame_time() {
+	return frame;
+}
 
 }
 

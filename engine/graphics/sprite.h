@@ -13,7 +13,7 @@ class Sprite {
 public:
 	Sprite(
 		Image& i,
-		const Rect<float>& sub = Rect<float>(0, 0, 1, 1),
+		const Rect<int>& sub = Rect<int>(0, 0, 1, 1),
 		int frames = 1
 	);
 	void draw();

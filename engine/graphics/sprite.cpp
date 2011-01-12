@@ -2,7 +2,7 @@
 
 namespace machinist {
 
-Sprite::Sprite(Image& image, const Rect<float>& sub, int frames) :
+Sprite::Sprite(Image& image, const Rect<int>& sub, int frames) :
 	image(image),
 	pos(0, 0, sub.width / frames, sub.height),
 	frame(

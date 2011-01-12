@@ -1,8 +1,10 @@
 #include "window.h"
+#include <sstream>
+#include <algorithm>
 
 namespace machinist {
 
-Window::Window(int w, int h) : width(w), height(h) {
+Window::Window(int w, int h) : width(w), height(h), framerate(0) {
 	display = XOpenDisplay(NULL);
 	::Window root = DefaultRootWindow(display);
 	
@@ -124,11 +126,17 @@ bool Window::handle_events() {
 }
 
 void Window::swap_buffers() {
-	double time = 1. / 30 - clock.get_elapsed();
-	if (time > 0)
-		Clock::sleep(time);
+	if (framerate > 0) {
+		double time = 1.0 / framerate - clock.get_elapsed();
+		if (time > 0)
+			Clock::sleep(time);
+	}
+	frame = clock.get_elapsed();
 	
-	// TODO: store frame time, calculate fps
+	std::ostringstream ss;
+	ss << "fps: " << 1.0 / get_frame_time();
+	XStoreName(display, window, ss.str().c_str());
+	
 	clock.reset();
 	
 	input().swap_buffers();

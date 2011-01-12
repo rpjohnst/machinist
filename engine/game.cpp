@@ -4,6 +4,8 @@
 namespace machinist {
 
 Game::Game() : Window(640, 480) {
+	set_framerate(60);
+	
 	glEnable(GL_TEXTURE_2D);
 	
 	glMatrixMode(GL_PROJECTION);
@@ -28,7 +30,7 @@ Game::Game() : Window(640, 480) {
 	ilDeleteImage(i);
 	ilShutDown();
 	
-	sprite = new Sprite(*image, Rect<float>(0, 0, 128, 32), 4);
+	sprite = new Sprite(*image, Rect<int>(0, 0, 128, 32), 4);
 }
 
 Game::~Game() {
