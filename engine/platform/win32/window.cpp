@@ -32,17 +32,18 @@ Window::Window(int width, int height) {
 		NULL, NULL, GetModuleHandle(NULL), NULL
 	);
 	SetWindowLong(hWnd, GWL_USERDATA, reinterpret_cast<LONG>(this));
-	
-	// device context
-	static PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR), 1,
-		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL |
-		PFD_DOUBLEBUFFER | PFD_TYPE_RGBA,
-		32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		16, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
-	};
 	hDC = GetDC(hWnd);
-	GLuint pf = ChoosePixelFormat(hDC, &pfd);
+	
+	// pixel format
+	static PIXELFORMATDESCRIPTOR pfd = { 0 };
+	pfd.nSize = sizeof(pfd);
+	pfd.nVersion = 1;
+	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = 24;
+	pfd.cDepthBits = 16;
+	pfd.iLayerType = PFD_MAIN_PLANE;
+	int pf = ChoosePixelFormat(hDC, &pfd);
 	SetPixelFormat(hDC, pf, &pfd);
 	
 	// rendering context
