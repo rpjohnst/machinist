@@ -1,7 +1,9 @@
-env = Environment()
+import os
 
-var = Variables()
-var.AddVariables(
+env = Environment(ENV = { "PATH": os.environ["PATH"] }, tools = [])
+
+vars = Variables()
+vars.AddVariables(
 	("CXX", "compiler to use."),
 	EnumVariable(
 		"build", "set to debug for syms.", "debug",
@@ -19,8 +21,12 @@ var.AddVariables(
 		allowed_values = [ "opengl", "directx" ]
 	)
 )
+vars.Update(env)
+if GetOption("help"):
+	Help(vars.GenerateHelpText(env))
 
-env = Environment(variables = var, tools = [ "c++", "link" ])
+env.Tool("c++")
+env.Tool("link")
 env.Append(
 	CPPDEFINES = [
 		"PLATFORM_" + env["platform"].upper(),
@@ -28,17 +34,13 @@ env.Append(
 	],
 	CPPPATH = [ "#engine" ]
 )
-
 env.Append(**{
 	"release": { "CCFLAGS": "-O3" },
 	"debug": { "CCFLAGS": "-g", "CPPDEFINES": [ "DEBUG" ] },
 	"profile": { "CCFLAGS": "-O3 -pg", "LINKFLAGS": "-pg" }
 }[env["build"]])
 
-if GetOption("help"):
-	Help(var.GenerateHelpText(env))
-else:
-	env.SConscript(
-		"engine/SConscript", exports = [ "env" ],
-		variant_dir = "$build/engine", duplicate = False,
-	)
+env.SConscript(
+	"engine/SConscript", exports = [ "env" ],
+	variant_dir = "$build/engine", duplicate = False,
+)

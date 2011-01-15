@@ -4,5 +4,4 @@ release/*
 profile/*
 .*
 *.pyc
-*.bmp
 *.out
