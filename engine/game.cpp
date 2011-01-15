@@ -1,7 +1,31 @@
 #include "game.h"
-#include <IL/il.h>
+#include <fstream>
+#include <vector>
 
 namespace machinist {
+
+std::vector<char> load_bitmap(const char *filename, int& width, int& height) {
+	std::ifstream file;
+	file.open(filename, std::ifstream::binary);
+	if (!file.good())
+		throw "could not open file";
+	
+	int start;
+	file.seekg(10).read(reinterpret_cast<char*>(&start), 4);
+	
+	file.seekg(18).read(reinterpret_cast<char*>(&width), 4)
+		.read(reinterpret_cast<char*>(&height), 4);
+	
+	int depth;
+	file.seekg(28).read(reinterpret_cast<char*>(&depth), 4);
+	if (depth != 24)
+		throw "unsupported bit depth";
+	
+	std::vector<char> pixels(width * height * 3);
+	file.seekg(start).read(&pixels.front(), pixels.size());
+	
+	return pixels;
+}
 
 Game::Game() : Window(640, 480) {
 	set_framerate(60);
@@ -17,19 +41,9 @@ Game::Game() : Window(640, 480) {
 	
 	glClearColor(1.0, 0.0, 0.0, 1.0);
 	
-	ilInit();
-	ILuint i;
-	ilGenImages(1, &i);
-	ilBindImage(i);
-	ilLoadImage("test.bmp");
-	image = new Image(
-		ilGetInteger(IL_IMAGE_WIDTH),
-		ilGetInteger(IL_IMAGE_WIDTH),
-		ilGetData()
-	);
-	ilDeleteImage(i);
-	ilShutDown();
-	
+	int width, height;
+	std::vector<char> data = load_bitmap("test.bmp", width, height);
+	image = new Image(width, height, &data.front());
 	sprite = new Sprite(*image, Rect<int>(0, 0, 128, 32), 4);
 }
 
