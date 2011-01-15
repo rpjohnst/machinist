@@ -2,13 +2,10 @@ env = Environment()
 
 var = Variables()
 var.AddVariables(
+	("CXX", "compiler to use."),
 	EnumVariable(
 		"build", "set to debug for syms.", "debug",
 		allowed_values = [ "debug", "profile", "release" ]
-	),
-	EnumVariable(
-		"compiler", "toolchain to use.", "clang",
-		allowed_values = [ "clang", "llvm", "g++" ]
 	),
 	EnumVariable(
 		"platform", "target api.", {
@@ -23,8 +20,7 @@ var.AddVariables(
 	)
 )
 
-env = Environment(variables = var)
-env.Tool("$compiler")
+env = Environment(variables = var, tools = [ "c++", "link" ])
 env.Append(
 	CPPDEFINES = [
 		"PLATFORM_" + env["platform"].upper(),
@@ -34,9 +30,9 @@ env.Append(
 )
 
 env.Append(**{
-	"release": { "CCFLAGS": "-O4", "LINKFLAGS": "-use-gold-plugin" },
+	"release": { "CCFLAGS": "-O3" },
 	"debug": { "CCFLAGS": "-g", "CPPDEFINES": [ "DEBUG" ] },
-	"profile": { "CCFLAGS": "-O4 -pg", "LINKFLAGS": "-pg" }
+	"profile": { "CCFLAGS": "-O3 -pg", "LINKFLAGS": "-pg" }
 }[env["build"]])
 
 if GetOption("help"):
