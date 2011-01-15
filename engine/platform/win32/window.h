@@ -5,7 +5,7 @@
 
 #include <platform/window.h>
 #include <windows.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 
 namespace machinist {
 
@@ -13,19 +13,28 @@ class exception {};
 
 class Window : protected WindowBase {
 protected:
-	Window();
+	Window(int width, int height);
 	~Window();
 	
 	bool handle_events();
-	
-	void swap_buffers() { SwapBuffers(hDC); }
+	void swap_buffers();
+	void set_caption(const std::string&);
 
 private:
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 	
 	HWND hWnd;
+	HDC hDC;
 	HGLRC hRC;
 };
+
+inline void Window::swap_buffers() {
+	SwapBuffers(hDC);
+}
+
+inline void Window::set_caption(const std::string& caption) {
+	SetWindowText(hWnd, caption.c_str());
+}
 
 }
 

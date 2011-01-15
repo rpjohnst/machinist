@@ -2,6 +2,5 @@ import machinist
 Import([ "env" ])
 
 objects = machinist.Objects(env, Glob("*.cpp") + env.Glob("$graphics/*.cpp"))
-env.Append(LIBS = [ "IL" ])
 
 Return([ "objects" ])

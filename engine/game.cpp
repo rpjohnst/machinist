@@ -1,6 +1,7 @@
 #include "game.h"
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 namespace machinist {
 
@@ -23,6 +24,8 @@ std::vector<char> load_bitmap(const char *filename, int& width, int& height) {
 	
 	std::vector<char> pixels(width * height * 3);
 	file.seekg(start).read(&pixels.front(), pixels.size());
+	for (int i = 0; i < width * height * 3; i += 3)
+		std::swap(pixels[i], pixels[i + 2]);
 	
 	return pixels;
 }
@@ -68,7 +71,7 @@ void Game::run() {
 		glTranslatef(input().mouse_x(), input().mouse_y(), 0);
 		
 		draw();
-		swap_buffers();
+		display();
 	}
 }
 

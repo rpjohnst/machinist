@@ -4,9 +4,9 @@
 // this file should not be included by the user; use <platform/window.h> instead
 
 #include <platform/window.h>
-#include <platform/clock.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
+#include <string>
 
 namespace machinist {
 
@@ -19,31 +19,23 @@ protected:
 	
 	bool handle_events();
 	void swap_buffers();
-	
-	void set_framerate(int);
-	double get_frame_time();
+	void set_caption(const std::string&);
 
 private:
 	static Mouse::Button map_button(int);
 	static int map_key(KeySym);
 	
-	Display *display;
+	Display *disp;
 	::Window window;
 	GLXContext glc;
-	
-	int width, height;
-	int framerate;
-	Clock clock;
-	
-	double frame;
 };
 
-inline void Window::set_framerate(int fps) {
-	framerate = fps;
+inline void Window::swap_buffers() {
+	glXSwapBuffers(disp, window);
 }
 
-inline double Window::get_frame_time() {
-	return frame;
+inline void Window::set_caption(const std::string& caption) {
+	XStoreName(disp, window, caption.c_str());
 }
 
 }

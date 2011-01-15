@@ -1,5 +1,5 @@
-#ifndef PLATFORM_XLIB_CLOCK_H
-#define PLATFORM_XLIB_CLOCK_H
+#ifndef PLATFORM_WIN32_CLOCK_H
+#define PLATFORM_WIN32_CLOCK_H
 
 namespace machinist {
 

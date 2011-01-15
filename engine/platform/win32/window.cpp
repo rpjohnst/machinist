@@ -2,7 +2,7 @@
 
 namespace machinist {
 
-Window::Window() {
+Window::Window(int width, int height) {
 	// window class
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -41,14 +41,13 @@ Window::Window() {
 		32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		16, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
 	};
-	HDC hDC = GetDC(hWnd);
+	hDC = GetDC(hWnd);
 	GLuint pf = ChoosePixelFormat(hDC, &pfd);
 	SetPixelFormat(hDC, pf, &pfd);
 	
 	// rendering context
 	hRC = wglCreateContext(hDC);
 	wglMakeCurrent(hDC, hRC);
-	ReleaseDC(hWnd, hDC);
 	
 	// show
 	ShowWindow(hWnd, SW_SHOW);
@@ -57,7 +56,7 @@ Window::Window() {
 Window::~Window() {
 	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(hRC);
-	
+	ReleaseDC(hWnd, hDC);
 	DestroyWindow(hWnd);
 	UnregisterClass("Machinist", GetModuleHandle(NULL));
 }
@@ -100,4 +99,10 @@ LRESULT CALLBACK Window::WndProc(
 	return 0;
 }
 
+}
+
+// allow the user to write main for all platforms
+int main(int, char*[]);
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+	return main(__argc, __argv);
 }

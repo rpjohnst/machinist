@@ -4,56 +4,56 @@
 
 namespace machinist {
 
-Window::Window(int w, int h) : width(w), height(h), framerate(0) {
-	display = XOpenDisplay(NULL);
-	::Window root = DefaultRootWindow(display);
+Window::Window(int width, int height) {
+	disp = XOpenDisplay(NULL);
+	::Window root = DefaultRootWindow(disp);
 	
 	// visual
 	GLint att[] = { GLX_RGBA, GLX_DOUBLEBUFFER, None };
-	XVisualInfo *vi = glXChooseVisual(display, 0, att);
+	XVisualInfo *vi = glXChooseVisual(disp, 0, att);
 	
 	// window
 	XSetWindowAttributes swa;
-	swa.colormap = XCreateColormap(display, root, vi->visual, AllocNone);
+	swa.colormap = XCreateColormap(disp, root, vi->visual, AllocNone);
 	swa.event_mask = ExposureMask |
 		KeyPressMask | KeyReleaseMask |
 		ButtonPressMask | ButtonReleaseMask |
 		PointerMotionMask;
 	window = XCreateWindow(
-		display, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
+		disp, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
 		CWColormap | CWEventMask, &swa
 	);
 	
 	// fix the brain-dead default event setup to actually recieve quit events
-	Atom wm_protocols[] = { XInternAtom(display, "WM_DELETE_WINDOW", False) };
-	XSetWMProtocols(display, window, wm_protocols, 1);
+	Atom wm_protocols[] = { XInternAtom(disp, "WM_DELETE_WINDOW", False) };
+	XSetWMProtocols(disp, window, wm_protocols, 1);
 	
 	// rendering context
-	glc = glXCreateContext(display, vi, NULL, GL_TRUE);
-	glXMakeCurrent(display, window, glc);
+	glc = glXCreateContext(disp, vi, NULL, GL_TRUE);
+	glXMakeCurrent(disp, window, glc);
 	
 	// show the window
-	XMapWindow(display, window);
+	XMapWindow(disp, window);
 	XWindowAttributes xwa;
-	XGetWindowAttributes(display, window, &xwa);
+	XGetWindowAttributes(disp, window, &xwa);
 	glViewport(0, 0, xwa.width, xwa.height);
 }
 
 Window::~Window() {
-	glXMakeCurrent(display, None, NULL);
-	glXDestroyContext(display, glc);
-	XDestroyWindow(display, window);
-	XCloseDisplay(display);
+	glXMakeCurrent(disp, None, NULL);
+	glXDestroyContext(disp, glc);
+	XDestroyWindow(disp, window);
+	XCloseDisplay(disp);
 }
 
 bool Window::handle_events() {
-	while (XPending(display)) {
+	while (XPending(disp)) {
 		XEvent event;
-		XNextEvent(display, &event);
+		XNextEvent(disp, &event);
 		
 		switch (event.type) {
 		case ClientMessage: {
-			Atom wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", True);
+			Atom wm_delete_window = XInternAtom(disp, "WM_DELETE_WINDOW", True);
 			if (event.xclient.data.l[0] == wm_delete_window)
 				return false;
 			break;
@@ -74,9 +74,9 @@ bool Window::handle_events() {
 			 * X gives us KeyRelease events during auto-repeat, unlike Windows
 			 * which just sends WM_KEYDOWN until the key is *actually* released.
 			 */
-			if (XEventsQueued(display, QueuedAfterReading)) {
+			if (XEventsQueued(disp, QueuedAfterReading)) {
 				XEvent next;
-				XPeekEvent(display, &next);
+				XPeekEvent(disp, &next);
 				if (
 					next.type == KeyPress &&
 					next.xkey.time == event.xkey.time &&
@@ -123,24 +123,6 @@ bool Window::handle_events() {
 	}
 	
 	return true;
-}
-
-void Window::swap_buffers() {
-	if (framerate > 0) {
-		double time = 1.0 / framerate - clock.get_elapsed();
-		if (time > 0)
-			Clock::sleep(time);
-	}
-	frame = clock.get_elapsed();
-	
-	std::ostringstream ss;
-	ss << "fps: " << 1.0 / get_frame_time();
-	XStoreName(display, window, ss.str().c_str());
-	
-	clock.reset();
-	
-	input().swap_buffers();
-	glXSwapBuffers(display, window);
 }
 
 Mouse::Button Window::map_button(int button) {

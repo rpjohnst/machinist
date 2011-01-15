@@ -78,16 +78,16 @@ public:
 	
 	void swap_buffers();
 	
-	bool key_down(int key);
-	bool key_pressed(int key);
-	bool key_released(int key);
+	bool key_down(int key) const;
+	bool key_pressed(int key) const;
+	bool key_released(int key) const;
 	
-	bool button_down(int button);
-	bool button_pressed(int button);
-	bool button_released(int button);
+	bool button_down(int button) const;
+	bool button_pressed(int button) const;
+	bool button_released(int button) const;
 	
-	int mouse_x();
-	int mouse_y();
+	int mouse_x() const;
+	int mouse_y() const;
 
 private:
 	bool keystate[Key::Count], last_keystate[Key::Count];
@@ -96,35 +96,35 @@ private:
 	Vector<int> mouse;
 };
 
-inline bool Input::key_down(int key) {
+inline bool Input::key_down(int key) const {
 	return keystate[key];
 }
 
-inline bool Input::key_pressed(int key) {
+inline bool Input::key_pressed(int key) const {
 	return keystate[key] == true && last_keystate[key] == false;
 }
 
-inline bool Input::key_released(int key) {
+inline bool Input::key_released(int key) const {
 	return keystate[key] == false && last_keystate[key] == true;
 }
 
-inline bool Input::button_down(int button) {
+inline bool Input::button_down(int button) const {
 	return mousestate[button];
 }
 
-inline bool Input::button_pressed(int button) {
+inline bool Input::button_pressed(int button) const {
 	return mousestate[button] == true && last_mousestate[button] == false;
 }
 
-inline bool Input::button_released(int button) {
+inline bool Input::button_released(int button) const {
 	return mousestate[button] == false && last_mousestate[button] == true;
 }
 
-inline int Input::mouse_x() {
+inline int Input::mouse_x() const {
 	return mouse.x;
 }
 
-inline int Input::mouse_y() {
+inline int Input::mouse_y() const {
 	return mouse.y;
 }
 

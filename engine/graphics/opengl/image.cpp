@@ -11,7 +11,7 @@ Image::Image(int w, int h, void* data) : width(w), height(h) {
 	glTexImage2D(
 		GL_TEXTURE_2D, 0,
 		3, width, height,
-		0, GL_BGR, GL_UNSIGNED_BYTE,
+		0, GL_RGB, GL_UNSIGNED_BYTE,
 		data
 	);
 	

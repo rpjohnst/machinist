@@ -1,6 +1,5 @@
 #include "clock.h"
-#include <sys/time.h>
-#include <unistd.h>
+#include <windows.h>
 
 namespace machinist {
 
@@ -17,14 +16,12 @@ double Clock::get_elapsed() {
 }
 
 double Clock::get_time() {
-	timeval time = { 0, 0 };
-	gettimeofday(&time, NULL);
-	
-	return time.tv_sec + time.tv_usec / 1000000;
+	DWORD ticks = GetTickCount();
+	return (double)ticks / 1000;
 }
 
 void Clock::sleep(double time) {
-	usleep(static_cast<unsigned long>(time * 1000000));
+	Sleep(time * 1000);
 }
 
 }
