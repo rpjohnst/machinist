@@ -22,6 +22,7 @@ protected:
 
 private:
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+	static int map_key(int);
 	
 	HWND hWnd;
 	HDC hDC;

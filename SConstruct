@@ -1,6 +1,6 @@
 import os
 
-env = Environment(ENV = { "PATH": os.environ["PATH"] }, tools = [])
+env = Environment(ENV = { "PATH": os.environ["PATH"] }, tools = [ "c++", "link" ])
 
 vars = Variables()
 vars.AddVariables(
@@ -25,8 +25,6 @@ vars.Update(env)
 if GetOption("help"):
 	Help(vars.GenerateHelpText(env))
 
-env.Tool("c++")
-env.Tool("link")
 env.Append(
 	CPPDEFINES = [
 		"PLATFORM_" + env["platform"].upper(),
