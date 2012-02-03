@@ -20,7 +20,7 @@ double Clock::get_time() {
 	timeval time = { 0, 0 };
 	gettimeofday(&time, NULL);
 	
-	return time.tv_sec + time.tv_usec / 1000000;
+	return time.tv_sec + time.tv_usec / 1000000.0;
 }
 
 void Clock::sleep(double time) {
