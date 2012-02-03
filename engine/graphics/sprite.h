@@ -16,14 +16,12 @@ public:
 		const Rect<int>& sub = Rect<int>(0, 0, 1, 1),
 		int frames = 1
 	);
-	void draw();
+	void draw(int x, int y, int angle, int frame);
 
 private:
 	Image& image;
 	Rect<int> pos; // implicitly contains the origin
-	Rect<float> frame;
-	
-	int x, y, angle;
+	int x, y, frames;
 };
 
 }

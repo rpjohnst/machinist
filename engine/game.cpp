@@ -77,7 +77,8 @@ void Game::run() {
 
 void Game::draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	sprite->draw();
+	static int i = 0;
+	sprite->draw(0, 0, 0, i++);
 }
 
 }
